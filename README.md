@@ -8,10 +8,10 @@ Scans the Hypixel Skyblock Auction House for user inputted item and attribute. R
 
 Install the src folder
 
-```bash
-  1. Copy the path of the src folder 
+```
+  1. Copy the path of the AuctionHouseAlert folder 
   2. Open Windows Terminal and type "cd " plus the file path
-        Example: cd C:\Users\user\Documents\src
+        Example: cd C:\Users\user\Documents\AuctionHouseAlert
   3. Then type "java AuctionHouseAlert.java" to run the java file
 ```
     
