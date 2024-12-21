@@ -6,7 +6,7 @@ Scans the Hypixel Skyblock Auction House for user inputted item and attribute. R
 
 ## Installation
 
-Install the src folder
+Install the AuctionHouseAlert folder
 
 ```
   1. Copy the path of the AuctionHouseAlert folder 
