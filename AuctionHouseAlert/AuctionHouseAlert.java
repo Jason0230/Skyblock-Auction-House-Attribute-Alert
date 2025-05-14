@@ -181,38 +181,40 @@ public class AuctionHouseAlert {
                 maxPages = getMaxPages(page);
                 //process the page if it still contains the desiredItemName
                 //synchronize with uuid to prevent data races
-                synchronized (uuid) {
-                    while (page.contains(desiredItemName)) {
-                        page = findWhereUUIDStarts(page, page.indexOf(desiredItemName),
-                                desiredItemName);
-    
-                        String currentItemLore = getLore(page);
-    
-                        // 1 attribute search
-                        if (mode == 1 && currentItemLore.contains(desiredAttribute)
-                                && checkForExactAttributeDesired(currentItemLore, desiredAttribute)
-                                && isBin(page)) {
-    
+                
+                while (page.contains(desiredItemName)) {
+                    page = findWhereUUIDStarts(page, page.indexOf(desiredItemName),
+                            desiredItemName);
+
+                    String currentItemLore = getLore(page);
+
+                    // 1 attribute search
+                    if (mode == 1 && currentItemLore.contains(desiredAttribute)
+                            && checkForExactAttributeDesired(currentItemLore, desiredAttribute)
+                            && isBin(page)) {
+                        synchronized (uuid) {
+                        priceMap.put(getUUID(page), getPrice(page));
+                        uuid.add(getUUID(page));
+                        }
+                    }
+                    // 2 attribute search
+                    else if (mode == 2 && currentItemLore.contains(desiredAttribute)
+                            && currentItemLore.contains(desiredAttribute2) &&
+                            checkForExactAttributeDesired(currentItemLore, desiredAttribute)
+                            &&
+                            checkForExactAttributeDesired(currentItemLore, desiredAttribute2)
+                            && isBin(page)) {
+                            synchronized (uuid) {
                             priceMap.put(getUUID(page), getPrice(page));
                             uuid.add(getUUID(page));
-                        }
-                        // 2 attribute search
-                        else if (mode == 2 && currentItemLore.contains(desiredAttribute)
-                                && currentItemLore.contains(desiredAttribute2) &&
-                                checkForExactAttributeDesired(currentItemLore, desiredAttribute)
-                                &&
-                                checkForExactAttributeDesired(currentItemLore, desiredAttribute2)
-                                && isBin(page)) {
-    
-                                priceMap.put(getUUID(page), getPrice(page));
-                                uuid.add(getUUID(page));
-                        }
-    
-                        // Going to next item
-                        int nextItemIndex = page.indexOf("\"item_uuid\"");
-                        page = page.substring(nextItemIndex + 10);
+                            }
                     }
+
+                    // Going to next item
+                    int nextItemIndex = page.indexOf("\"item_uuid\"");
+                    page = page.substring(nextItemIndex + 10);
                 }
+                
                 
             }
         }
@@ -249,13 +251,13 @@ public class AuctionHouseAlert {
             playSound();
         }
 
-        //uuid is 
+        //uuid is empty
         if (uuid.isEmpty()) {
             text += "\nNone on auction house :(";
         }
 
-        int size = uuid.size();
-        for (int i = 0; i < Math.min(size, MAX_ITEMS_DISPLAYED); i++) {
+        int size = Math.min(uuid.size(), MAX_ITEMS_DISPLAYED);
+        for (int i = 0; i < size; i++) {
             String currentUUID = uuid.remove();
             text += "\n/viewauction " + currentUUID + "     |     " + addComma(priceMap.get(currentUUID));
         }
@@ -395,8 +397,9 @@ public class AuctionHouseAlert {
         }
     }
 
-    private static boolean isRomanNumeral (String s) {
-        for (int i = 0; i < s.length(); i++){
+    private static boolean isRomanNumeral(String s) {
+        int len = s.length();
+        for (int i = 0; i < len; i++){
             char curr = s.charAt(i);
 
             if (curr != 'i' && curr != 'v' && curr != 'x'){
@@ -473,7 +476,7 @@ public class AuctionHouseAlert {
 
         while (indexOfUUID > newIndexOfItemName) {
             steps += 25;
-            if(indexOfItemName - steps <= 0) return text.substring(0);
+            if (indexOfItemName - steps <= 0) return text.substring(0);
             s = text.substring(indexOfItemName - steps);
             indexOfUUID = s.indexOf("\"uuid\"");
             newIndexOfItemName = s.indexOf(desiredItemName);
@@ -493,7 +496,8 @@ public class AuctionHouseAlert {
         int itemPriceEndIndex = itemPriceIndex;
         String currentPageAfterCurrentItemPrice = s.substring(itemPriceIndex);
 
-        for (int i = 0; i < currentPageAfterCurrentItemPrice.length(); i++) {
+        int len = currentPageAfterCurrentItemPrice.length();
+        for (int i = 0; i < len; i++) {
             if (currentPageAfterCurrentItemPrice.charAt(i) == ',') {
                 itemPriceEndIndex += i;
                 break;
@@ -507,7 +511,8 @@ public class AuctionHouseAlert {
         int itemLoreEndIndex = itemLoreIndex;
         String currentPageAfterCurrentItemLore = s.substring(itemLoreIndex);
 
-        for (int i = 0; i < currentPageAfterCurrentItemLore.length(); i++) {
+        int len = currentPageAfterCurrentItemLore.length();
+        for (int i = 0; i < len; i++) {
             if (currentPageAfterCurrentItemLore.charAt(i) == '\"') {
                 itemLoreEndIndex += i;
                 break;
