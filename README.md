@@ -41,3 +41,7 @@ Install the AuctionHouseAlert folder
     - Any invalid string that is inputted will set the max price to 0 (no alert)
 
 ```
+
+## Demo Video
+
+[![Watch the Video](http://img.youtube.com/vi/jnIfkoXv5zQ/0.jpg)](http://www.youtube.com/watch?v=jnIfkoXv5zQ)
